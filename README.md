@@ -59,14 +59,12 @@ to the terminal like this:
 
 # EXAMPLE
 
-I use this for giving demonstrations of [pinto](https://metacpan.org/pod/pinto), such as the one seen here
-(the live demonstration starts around 10:47):
-
-    https://www.youtube.com/watch?v=H-JkFXm8Xgk
-
-The command file that I use for that presentation is included inside this
-distribution at `example/pinto.demo`.  This file is for illustration only, so
-don't expect it to actually work for you.
+I use `cleo` for giving demonstrations of
+[pinto](https://metacpan.org/pod/pinto), such as the one seen
+[here](https://www.youtube.com/watch?v=H-JkFXm8Xgk) (the live demonstration
+part starts around 10:47):  The command file that I use for that presentation is
+included inside this distribution at `example/pinto.demo`.  This file is for
+illustration only, so don't expect it to actually work for you.
 
 # TODO
 
