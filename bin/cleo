@@ -51,7 +51,7 @@ the playback:
 
 C<cleo> reads commands from a file.  Each line is treated as one command.
 Blank lines and those starting with C<#> will be ignored.  The commands
-theselves can be anything that you would type into an interactive shell.
+themselves can be anything that you would type into an interactive shell.
 You can also add a few special tokens that C<cleo> recognizes:
 
 =over 4
@@ -101,7 +101,7 @@ vary.
 
 =item Support backspacing in recorded command
 
-=item Support mult-line recorded commands
+=item Support multi-line recorded commands
 
 =item Write unit tests
 

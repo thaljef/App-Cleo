@@ -125,7 +125,7 @@ App::Cleo - Playback shell commands for live demonstrations
 
 =head1 DESCRIPTION
 
-App::Cleo is the backend for the L<cleo> utility.  Please see the L<cleo>
+App::Cleo is the back-end for the L<cleo> utility.  Please see the L<cleo>
 documentation for details on how to use this.
 
 =head1 CONSTRUCTOR
@@ -137,7 +137,7 @@ supported:
 
 =item delay
 
-Number of miliseconds to wait before displaying each character of the command.
+Number of milliseconds to wait before displaying each character of the command.
 The default is C<25_000>.
 
 =item prompt
