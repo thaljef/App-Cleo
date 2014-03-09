@@ -1,4 +1,4 @@
-# App-Cleo: Play back shell commands for live demonstrations
+# App-Cleo
 
 "cleo" is a utility for playing back pre-recorded shell commands for a live
 demonstration.  "cleo" displays the commands as if you had actually typed them
