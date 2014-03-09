@@ -87,6 +87,12 @@ The command file that I use for that presentation is included inside this
 distribution at F<examples/pinto.demo>.  This file is for illustration only,
 so don't expect it to actually work for you.
 
+=head1 LIMITATIONS
+
+C<cleo> only works on Unix-like platforms.  It may work on Windows if you use
+Cygwin.  Personally, I have only used C<cleo> on Mac OS X.  You mileage may
+vary.
+
 =head1 TODO
 
 =over 4
