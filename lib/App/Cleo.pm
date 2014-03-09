@@ -171,7 +171,7 @@ array will be treated as a command.
 
 =back
 
-=heasd1 AUTHOR
+=head1 AUTHOR
 
 Jeffrey Ryan Thalhammer <thaljef@cpan.org>
 
