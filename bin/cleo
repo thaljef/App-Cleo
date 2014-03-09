@@ -4,87 +4,118 @@ use strict;
 use warnings;
 use App::Cleo;
 
-my $cleo = App::Cleo->new;
-$cleo->run([<DATA>]);
+our $VERSION = 0.001;
 
 #-----------------------------------------------------------------------------
 
-__DATA__
+die 'Usage: cleo COMMAND_FILE' if not @ARGV;
+my $cleo = App::Cleo->new;
+$cleo->run(shift);
+exit;
 
-# Set up
-# !!perlbrew use perl-5.16.3
-# !!perlbrew lib delete perl-5.16.3@demo
-# !!perlbrew lib create perl-5.16.3@demo
-# !!exit
+#-----------------------------------------------------------------------------
 
-!!perlbrew use perl-5.16.3@demo
+=pod
 
-!!rm -rf MyModules
-# !!rm -rf ~/opt/local/pinto/lib/perl5/HTTP*
-# !!rm -rf ~/opt/local/pinto/lib/perl5/URI.pm
-# !!rm -rf ~/opt/local/pinto/lib/perl5/Pinto*
-# !!rm -rf ~/opt/local/pinto/lib/perl5/darwin-2level/auto/Pinto
-!!export PERL_CPANM_OPT=--notest
-echo 'Here we go!'; clear
+=head1 NAME
 
-# Install pinto
-# curl -L http://getpinto.stratopan.com | bash
+cleo - Play back shell commands for live demonstrations
 
-# Create repository
-pinto %%%--root MyModules %%%init %%%--source file:///Users/jeff/tmp/CPAN-Today
+=head1 SYNOPSIS
 
-# Show repository structure
-find MyModules -type f
+    cleo COMMAND_FILE
 
-# Set ENV var, so we can be lazy
-export PINTO_REPOSITORY_ROOT=$PWD/MyModules
+=head1 DESCRIPTION
 
-# Pull Dancer from CPAN and install
-pinto install%%% --do-pull%%% Dancer
+C<cleo> is a utility for playing back pre-recorded shell commands for a live
+demonstration.  C<cleo> displays the commands as if you had actually typed
+them and then executes them interactively.
 
-# Show stack contents
-pinto list
-clear
+There is probably an easy way to do this with C<expect> or a similar tool.
+But I couldn't figure it out, so I built this.  Your mileage may vary.
 
-# URI is broken so inject our patched one
-pinto add%%% ~/tmp/URI-1.58_PATCHED.tar.gz
+=head1 PLAYBACK CONTROLS
 
-# Pin our URI so it doesn't change
-pinto pin%%% URI
+C<cleo> always pauses and waits for a keypress before displaying a command and
+before executing it.  Pressing any key besides those listed below will advance
+the playback.
 
-# Edit config file to travel forward in time
-(exec < /dev/tty vim MyModules/.pinto/config/pinto.ini)
+  Key         Action
+  ------------------------------------------------------------------
+  s           skips the current command
+  q           quit playback
 
-# Pull newer Dancer and install
-pinto install --do-pull Dancer%%%~1.3116
+When things go wrong during the presentation, you can tell C<cleo> to pause
+and open a subshell so that you can fix the problem.  The subshell will have
+the same environment as the playback. When you exit the subshell (usually by
+typing C<exit>) you will be returned to the playback.
 
-# Show log to explain the pin
-pinto log
+  Key         Action
+  ------------------------------------------------------------------
+  ?           open subshell, then resume at current command
+  !           open subshell, then resume at previous command
 
-# Make a copy of the stack
-pinto copy%%% master foo
+=head1 COMMANDS
 
-# Show the stack listing
-pinto stacks
+C<cleo> reads commands from a file.  Each line is treated as one command.
+Blank lines and those starting with C<#> will be ignored.  The commands
+theselves can be anything that you would type into an interactive shell.
+You can also add a few special tokens that C<cleo> recognizes:
 
-# Unpin URI on the copied stack
-pinto unpin%%% --stack foo%%% URI
+=over 4
 
-# Upgrade Dancer
-pinto install --do-pull --stack foo%%% Dancer~1.3116
+=item
 
-# Compare the stacks
-pinto diff%%% master foo
+Commands starting with C<!!!> (three exclamation points) are not echoed to the
+screen and executed immediately. This is useful for running setup commands at
+the beginning of your demonstration.
 
-# Unpin URI on master too
-pinto unpin URI
+=item
 
-# Pull Dancer to master
-pinto pull Dancer~1.3116
+Within a command, C<%%%> (three percent signs) will cause C<cleo> to pause and
+wait for a keypress before displaying the rest of the command.  This is useful
+if you want to stop in the middle of a command to give some explanation.
 
-# Compare stacks again
-pinto diff master foo
+=back
 
-# The end
-echo 'Thank You!'
-exit
+Otherwise, C<cleo> displays and executes the commands verbatim.  Note that
+some interactive commands like C<vim> are picky about STDOUT and STDIN.  To
+make them work properly with C<cleo>, you may need to force them to attach
+to the terminal like this:
+
+    (exec < /dev/tty vim)
+
+=head1 EXAMPLE
+
+I use this for giving demonstrations of L<pinto>, such as the one seen here
+(the live demonstration starts around 10:47):
+
+  https://www.youtube.com/watch?v=H-JkFXm8Xgk
+
+The command file that I use for that presentation is included inside this
+distribution at F<example/pinto.demo>.  This file is for illustration only, so
+don't expect it to actually work for you.
+
+=head1 TODO
+
+=over 4
+
+=item Jump to arbitrary command number
+
+=item Support backspacing in recorded command
+
+=item Support mult-line recorded commands
+
+=item Write unit tests
+
+=back
+
+=head1 AUTHOR
+
+Jeffrey Ryan Thalhammer <thaljef@cpan.org>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2014, Imaginative Software Systems
+
+=cut

@@ -8,6 +8,8 @@ use Term::ANSIColor qw(colored);
 use File::Slurp qw(read_file);
 use Time::HiRes qw(usleep);
 
+our $VERSION = 0.001;
+
 #-----------------------------------------------------------------------------
 
 sub new {
@@ -42,7 +44,7 @@ sub run {
     local $| = 1;
 
     chomp @commands;
-    @commands = grep { /^\s*[^\#]\S+/ } @commands;
+    @commands = grep { /^\s*[^\#;]\S+/ } @commands;
 
     CMD:
     for (my $i = 0; $i <= @commands; $i++) {
@@ -50,7 +52,7 @@ sub run {
         my $cmd = $commands[$i];
         chomp $cmd;
 
-        goto RUN if $cmd =~ s/^!!//;
+        goto RUN if $cmd =~ s/^!!!//;
 
         print sprintf $self->{prompt}, $i;
 
@@ -58,24 +60,25 @@ sub run {
         while (my $step = shift @steps) {
 
             my $key = ReadKey(0);
-            last CMD if $key eq 'q';
-            print "\n" and next CMD if $key eq 's';
-            print "\n" and redo CMD if $key eq 'r';
-            print "\n" and $i--, redo CMD if $key eq 'R';
+
+            last CMD                             if $key eq 'q';
+            print "\n"        and next CMD       if $key eq 's';
+            $self->subshell   and redo CMD       if $key eq '?';
+            $self->subshell   and $i--, redo CMD if $key eq '!';
+
 
             $step .= ' ' if not @steps;
             my @chars = split '', $step;
-            print $_ and usleep $self->{delay} for @chars;
+            print and usleep $self->{delay} for @chars;
         }
 
         my $key = ReadKey(0);
-        last CMD if $key eq 'q';
         print "\n";
 
-        next CMD if $key eq 's';
-        redo CMD if $key eq 'r';
-        $i--, redo CMD if $key eq 'R';
-
+        last CMD                           if $key eq 'q';
+        next CMD                           if $key eq 's';
+        $self->subshell and redo CMD       if $key eq '?';
+        $self->subshell and $i--, redo CMD if $key eq '!';
 
         RUN:
         $cmd =~ s/%%%//g;
@@ -95,13 +98,29 @@ sub run {
 }
 
 #-----------------------------------------------------------------------------
+
+sub subshell {
+    my ($self) = @_;
+
+    print "\n";
+
+    ReadMode('restore');
+    print "Entering subshell...\n";
+    system $self->{shell};
+    print "Returning to cleo...\n";
+    ReadMode('raw');
+
+    return 1;
+}
+
+#-----------------------------------------------------------------------------
 1;
 
 =pod
 
 =head1 NAME
 
-App::Cleo - Automate live demonstrations of command-line applications
+App::Cleo - Playback shell commands for live demonstrations
 
 =head1 SYNOPSIS
 
