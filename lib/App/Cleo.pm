@@ -8,7 +8,7 @@ use Term::ANSIColor qw(colored);
 use File::Slurp qw(read_file);
 use Time::HiRes qw(usleep);
 
-our $VERSION = 0.001;
+our $VERSION = 0.002;
 
 #-----------------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ sub new {
     my $self = {
         shell  => $ENV{SHELL} || '/bin/bash',
         prompt => colored( ['green'], '(%d)$ '),
-        delay  => 25000,
+        delay  => 25_000,
         @_,
     };
 
@@ -36,10 +36,8 @@ sub run {
             : $type eq 'ARRAY' ? @{$commands}
                 : die "Unsupported type: $type";
 
-    my $cmd_is_finished;
-    $SIG{ALRM} = sub {$cmd_is_finished = 1};
-
-    open my $shell, '|-', $self->{shell} or die $!;
+    open my $fh, '|-', $self->{shell} or die $!;
+    $self->{fh} = $fh;
     ReadMode('raw');
     local $| = 1;
 
@@ -52,7 +50,8 @@ sub run {
         my $cmd = $commands[$i];
         chomp $cmd;
 
-        goto RUN if $cmd =~ s/^!!!//;
+        $self->do_cmd($cmd) and next CMD
+            if $cmd =~ s/^!!!//;
 
         print sprintf $self->{prompt}, $i;
 
@@ -61,11 +60,10 @@ sub run {
 
             my $key = ReadKey(0);
 
-            last CMD                             if $key eq 'q';
-            print "\n"        and next CMD       if $key eq 's';
-            $self->subshell   and redo CMD       if $key eq '?';
-            $self->subshell   and $i--, redo CMD if $key eq '!';
-
+            last CMD                      if $key eq 'q';
+            print "\n" and next CMD       if $key eq 's';
+            print "\n" and redo CMD       if $key eq 'r';
+            print "\n" and $i--, redo CMD if $key eq 'p';
 
             $step .= ' ' if not @steps;
             my @chars = split '', $step;
@@ -75,20 +73,12 @@ sub run {
         my $key = ReadKey(0);
         print "\n";
 
-        last CMD                           if $key eq 'q';
-        next CMD                           if $key eq 's';
-        $self->subshell and redo CMD       if $key eq '?';
-        $self->subshell and $i--, redo CMD if $key eq '!';
+        last CMD       if $key eq 'q';
+        next CMD       if $key eq 's';
+        redo CMD       if $key eq 'r';
+        $i--, redo CMD if $key eq 'p';
 
-        RUN:
-        $cmd =~ s/%%%//g;
-        print $shell "$cmd\n";
-        print $shell "kill -14 $$\n";
-        $shell->flush;
-
-        # Wait for signal that command has ended
-        until ($cmd_is_finished) {}
-        $cmd_is_finished = 0;
+        $self->do_cmd($cmd);
     }
 
     ReadMode('restore');
@@ -99,16 +89,21 @@ sub run {
 
 #-----------------------------------------------------------------------------
 
-sub subshell {
-    my ($self) = @_;
+sub do_cmd {
+    my ($self, $cmd) = @_;
 
-    print "\n";
+    my $fh = $self->{fh};
+    my $cmd_is_finished;
+    local $SIG{ALRM} = sub {$cmd_is_finished = 1};
 
-    ReadMode('restore');
-    print "Entering subshell...\n";
-    system $self->{shell};
-    print "Returning to cleo...\n";
-    ReadMode('raw');
+    $cmd =~ s/%%%//g;
+    print $fh "$cmd\n";
+    print $fh "kill -14 $$\n";
+    $fh->flush;
+
+    # Wait for signal that command has ended
+    until ($cmd_is_finished) {}
+    $cmd_is_finished = 0;
 
     return 1;
 }
@@ -147,8 +142,8 @@ The default is C<25_000>.
 
 =item prompt
 
-String to use for the artificial prompt.  Consider using L<Term::ANSIColor> to
-make it pretty.  The default is a green C<$>.
+String to use for the artificial prompt.  The token C<%d> will be substituted
+with the number of the current command.  The default is C<(%d)$>.
 
 =item shell
 
