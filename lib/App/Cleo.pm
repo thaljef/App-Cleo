@@ -59,11 +59,12 @@ sub run {
         while (my $step = shift @steps) {
 
             my $key = ReadKey(0);
+            print "\n" if $key =~ m/[srp]/;
 
-            last CMD                      if $key eq 'q';
-            print "\n" and next CMD       if $key eq 's';
-            print "\n" and redo CMD       if $key eq 'r';
-            print "\n" and $i--, redo CMD if $key eq 'p';
+            last CMD       if $key eq 'q';
+            next CMD       if $key eq 's';
+            redo CMD       if $key eq 'r';
+            $i--, redo CMD if $key eq 'p';
 
             $step .= ' ' if not @steps;
             my @chars = split '', $step;
@@ -92,11 +93,12 @@ sub run {
 sub do_cmd {
     my ($self, $cmd) = @_;
 
-    my $fh = $self->{fh};
     my $cmd_is_finished;
     local $SIG{ALRM} = sub {$cmd_is_finished = 1};
 
     $cmd =~ s/%%%//g;
+    my $fh = $self->{fh};
+
     print $fh "$cmd\n";
     print $fh "kill -14 $$\n";
     $fh->flush;
@@ -115,7 +117,7 @@ sub do_cmd {
 
 =head1 NAME
 
-App::Cleo - Playback shell commands for live demonstrations
+App::Cleo - Play back shell commands for live demonstrations
 
 =head1 SYNOPSIS
 
