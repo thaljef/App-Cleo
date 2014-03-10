@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use App::Cleo;
 
-our $VERSION = 0.002;
+our $VERSION = 0.003;
 
 #-----------------------------------------------------------------------------
 
@@ -27,14 +27,14 @@ cleo - Play back shell commands for live demonstrations
 
 =head1 DESCRIPTION
 
-C<cleo> is a utility for playing back prerecorded shell commands for a live
+C<cleo> is a utility for playing back pre-recorded shell commands in a live
 demonstration.  C<cleo> displays the commands as if you had actually typed
 them and then executes them interactively.
 
 There is probably an easy way to do this with C<expect> or a similar tool.
 But I couldn't figure it out, so I built this.  Your mileage may vary.
 
-=head1 PLAYBACK CONTROLS
+=head1 PLAYBACK
 
 C<cleo> always pauses and waits for a keypress before displaying a command and
 before executing it.  Pressing any key besides those listed below will advance
@@ -90,8 +90,7 @@ so don't expect it to actually work for you.
 =head1 LIMITATIONS
 
 C<cleo> only works on Unix-like platforms.  It may work on Windows if you use
-Cygwin.  Personally, I have only used C<cleo> on Mac OS X.  You mileage may
-vary.
+Cygwin.  Personally, I have only used C<cleo> on Mac OS X.
 
 =head1 TODO
 

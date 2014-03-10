@@ -8,7 +8,7 @@ use Term::ANSIColor qw(colored);
 use File::Slurp qw(read_file);
 use Time::HiRes qw(usleep);
 
-our $VERSION = 0.002;
+our $VERSION = 0.003;
 
 #-----------------------------------------------------------------------------
 
