@@ -8,14 +8,14 @@ cleo - Play back shell commands for live demonstrations
 
 # DESCRIPTION
 
-`cleo` is a utility for playing back prerecorded shell commands for a live
+`cleo` is a utility for playing back pre-recorded shell commands in a live
 demonstration.  `cleo` displays the commands as if you had actually typed
 them and then executes them interactively.
 
 There is probably an easy way to do this with `expect` or a similar tool.
 But I couldn't figure it out, so I built this.  Your mileage may vary.
 
-# PLAYBACK CONTROLS
+# PLAYBACK
 
 `cleo` always pauses and waits for a keypress before displaying a command and
 before executing it.  Pressing any key besides those listed below will advance
@@ -67,8 +67,7 @@ so don't expect it to actually work for you.
 # LIMITATIONS
 
 `cleo` only works on Unix-like platforms.  It may work on Windows if you use
-Cygwin.  Personally, I have only used `cleo` on Mac OS X.  You mileage may
-vary.
+Cygwin.  Personally, I have only used `cleo` on Mac OS X.
 
 # TODO
 
