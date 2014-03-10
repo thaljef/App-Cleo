@@ -6,7 +6,6 @@
 
 # Trick cpanm into installing Pinto and a few prereqs
 !!!rm -rf ~/opt/local/pinto/lib/perl5/HTTP*
-!!!rm -rf ~/opt/local/pinto/lib/perl5/URI.pm
 !!!rm -rf ~/opt/local/pinto/lib/perl5/Pinto*
 !!!rm -rf ~/opt/local/pinto/lib/perl5/darwin-2level/auto/Pinto
 
