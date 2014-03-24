@@ -8,7 +8,7 @@ use Term::ANSIColor qw(colored);
 use File::Slurp qw(read_file);
 use Time::HiRes qw(usleep);
 
-our $VERSION = 0.003;
+our $VERSION = 0.004;
 
 #-----------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ sub run {
     @commands = grep { /^\s*[^\#;]\S+/ } @commands;
 
     CMD:
-    for (my $i = 0; $i <= @commands; $i++) {
+    for (my $i = 0; $i < @commands; $i++) {
 
         my $cmd = $commands[$i];
         chomp $cmd;

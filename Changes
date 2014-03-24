@@ -1,3 +1,7 @@
+0.004 2014-03-23 09:15:48 America/Los_Angeles
+
+    - Fixed off-by-one error
+
 0.003 2014-03-10 01:57:48 America/Los_Angeles
 
     - Just minor POD edits and refactoring.
