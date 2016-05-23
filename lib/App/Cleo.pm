@@ -41,6 +41,12 @@ sub run {
     ReadMode('raw');
     local $| = 1;
 
+    local $SIG{CHLD} = sub {
+        print "Child shell exited!\n";
+        ReadMode('restore');
+        exit;
+    };
+
     chomp @commands;
     @commands = grep { /^\s*[^\#;]\S+/ } @commands;
 
