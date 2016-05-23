@@ -68,6 +68,12 @@ Within a command, C<%%%> (three percent signs) will cause C<cleo> to pause and
 wait for a keypress before displaying the rest of the command.  This is useful
 if you want to stop in the middle of a command to give some explanation.
 
+=item C<...>
+
+Commands starting with C<...> (three periods) are displayed and then executed
+without waiting for a keypress.  This is useful for running commands that you
+want the audience to see but that don't require interaction.
+
 =back
 
 Otherwise, C<cleo> displays and executes the commands verbatim.  Note that

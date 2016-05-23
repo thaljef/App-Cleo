@@ -59,12 +59,14 @@ sub run {
         $self->do_cmd($cmd) and next CMD
             if $cmd =~ s/^!!!//;
 
+        my $just_do_it = $cmd =~ s/^\.\.\.//;
+
         print sprintf $self->{prompt}, $i;
 
         my @steps = split /%%%/, $cmd;
         while (my $step = shift @steps) {
 
-            my $key = ReadKey(0);
+            my $key = $just_do_it ? '' : ReadKey(0);
             print "\n" if $key =~ m/[srp]/;
 
             last CMD       if $key eq 'q';
@@ -77,7 +79,7 @@ sub run {
             print and usleep $self->{delay} for @chars;
         }
 
-        my $key = ReadKey(0);
+        my $key = $just_do_it ? '' : ReadKey(0);
         print "\n";
 
         last CMD       if $key eq 'q';
