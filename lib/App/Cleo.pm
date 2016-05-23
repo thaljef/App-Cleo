@@ -145,7 +145,7 @@ supported:
 
 =item delay
 
-Number of milliseconds to wait before displaying each character of the command.
+Number of microseconds to wait before displaying each character of the command.
 The default is C<25_000>.
 
 =item prompt
