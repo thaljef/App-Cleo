@@ -8,6 +8,8 @@ use Term::ANSIColor qw(colored);
 use File::Slurp qw(read_file);
 use Time::HiRes qw(usleep);
 
+use constant PS1 => 'ps1';
+use constant PS2 => 'ps2';
 our $VERSION = 0.004;
 
 #-----------------------------------------------------------------------------
@@ -17,8 +19,10 @@ sub new {
 
     my $self = {
         shell  => $ENV{SHELL} || '/bin/bash',
-        prompt => colored( ['green'], '(%d)$ '),
+        ps1    => colored( ['green'], '(%d)$ '),
+        ps2    => colored( ['green'], '> '),
         delay  => 25_000,
+        state  => PS1,
         @_,
     };
 
@@ -56,15 +60,20 @@ sub run {
         my $cmd = $commands[$i];
         chomp $cmd;
 
-        $self->do_cmd($cmd) and next CMD
-            if $cmd =~ s/^!!!//;
+        my $keep_going = $cmd =~ s/^\.\.\.//;
+        my $run_in_background = $cmd =~ s/^!!!//;
 
-        print sprintf $self->{prompt}, $i;
+        $self->do_cmd($cmd) and next CMD
+            if $run_in_background;
+
+        no warnings 'redundant';
+        my $prompt_state = $self->{state};
+        print sprintf $self->{$prompt_state}, $i;
 
         my @steps = split /%%%/, $cmd;
         while (my $step = shift @steps) {
 
-            my $key = ReadKey(0);
+            my $key = $keep_going ? '' : ReadKey(0);
             print "\n" if $key =~ m/[srp]/;
 
             last CMD       if $key eq 'q';
@@ -77,7 +86,7 @@ sub run {
             print and usleep $self->{delay} for @chars;
         }
 
-        my $key = ReadKey(0);
+        my $key = $keep_going ? '' : ReadKey(0);
         print "\n";
 
         last CMD       if $key eq 'q';
@@ -106,12 +115,18 @@ sub do_cmd {
     my $fh = $self->{fh};
 
     print $fh "$cmd\n";
+
+    ($self->{state} = PS2) and return 1
+        if $cmd =~ m{\s+\\$};
+
     print $fh "kill -14 $$\n";
     $fh->flush;
 
     # Wait for signal that command has ended
     until ($cmd_is_finished) {}
     $cmd_is_finished = 0;
+
+    $self->{state} = PS1;
 
     return 1;
 }
@@ -148,10 +163,16 @@ supported:
 Number of microseconds to wait before displaying each character of the command.
 The default is C<25_000>.
 
-=item prompt
+=item ps1
 
 String to use for the artificial prompt.  The token C<%d> will be substituted
 with the number of the current command.  The default is C<(%d)$>.
+
+=item ps2
+
+String to use for the artificial prompt that appears for multiline commands. The
+token C<%d> will be substituted with the number of the current command.  The
+default is C<< > >>.
 
 =item shell
 
