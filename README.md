@@ -17,8 +17,8 @@ But I couldn't figure it out, so I built this.  Your mileage may vary.
 
 # PLAYBACK
 
-`cleo` always pauses and waits for a keypress before displaying a command and
-before executing it.  Pressing any key besides those listed below will advance
+`cleo` pauses and waits for a keypress before displaying a command and
+before executing it. Pressing any key besides those listed below will advance
 the playback:
 
     Key                       Action
@@ -26,6 +26,7 @@ the playback:
     s                         skip the current command
     r                         redo the current command
     p                         redo the previous command
+    c                         run all remaining commands
     q                         quit playback
 
 # COMMANDS
@@ -41,9 +42,13 @@ You can also add a few special tokens that `cleo` recognizes:
     will be executed immediately. This is useful for running setup commands at the
     beginning of your demonstration.
 
+- `...`
+
+    Commands starting with `...` (three periods) will be executed without waiting for a keypress. This is useful if you want to show a series of commands but don't need to stop and explain each one as you go.
+
 - `%%%`
 
-    Within a command, `%%%` (three percent signs) will cause `cleo` to pause and
+    Within a command, `%%%` (three percent signs) will cause playback to pause and
     wait for a keypress before displaying the rest of the command.  This is useful
     if you want to stop in the middle of a command to give some explanation.
 
@@ -73,7 +78,6 @@ Cygwin.  Personally, I have only used `cleo` on Mac OS X.
 
 - Jump to arbitrary command number
 - Support backspacing in recorded command
-- Support multi-line recorded commands
 - Write unit tests
 
 # AUTHOR
