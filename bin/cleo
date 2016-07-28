@@ -105,8 +105,6 @@ Cygwin.  Personally, I have only used C<cleo> on Mac OS X.
 
 =item Support backspacing in recorded command
 
-=item Support multi-line recorded commands
-
 =item Write unit tests
 
 =back

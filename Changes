@@ -1,7 +1,8 @@
-0.005 2016-07-22 09:15:48 America/Los_Angeles
+0.005 2016-07-28 09:15:48 America/Los_Angeles
 
 	- Now supports multi-line commands.
-	- Use ... to start commands immediately.
+	- Use ... to show and run a command immediately.
+        - Use the 'c' command to run all remaining commands.
 
 0.004 2014-03-23 09:15:48 America/Los_Angeles
 
