@@ -54,6 +54,8 @@ sub run {
     chomp @commands;
     @commands = grep { /^\s*[^\#;]\S+/ } @commands;
 
+    my $continue_to_end = 0;
+
     CMD:
     for (my $i = 0; $i < @commands; $i++) {
 
@@ -73,26 +75,31 @@ sub run {
         my @steps = split /%%%/, $cmd;
         while (my $step = shift @steps) {
 
-            my $key = $keep_going ? '' : ReadKey(0);
+            my $should_pause = !($keep_going || $continue_to_end);
+            my $key = $should_pause ? ReadKey(0) : '';
             print "\n" if $key =~ m/[srp]/;
 
-            last CMD       if $key eq 'q';
-            next CMD       if $key eq 's';
-            redo CMD       if $key eq 'r';
-            $i--, redo CMD if $key eq 'p';
+            last CMD             if $key eq 'q';
+            next CMD             if $key eq 's';
+            redo CMD             if $key eq 'r';
+            $i--, redo CMD       if $key eq 'p';
+            $continue_to_end = 1 if $key eq 'c';
 
             $step .= ' ' if not @steps;
             my @chars = split '', $step;
             print and usleep $self->{delay} for @chars;
         }
 
-        my $key = $keep_going ? '' : ReadKey(0);
+        my $should_pause = !($keep_going || $continue_to_end);
+        my $key = $should_pause ? ReadKey(0) : '';
         print "\n";
 
-        last CMD       if $key eq 'q';
-        next CMD       if $key eq 's';
-        redo CMD       if $key eq 'r';
-        $i--, redo CMD if $key eq 'p';
+        last CMD             if $key eq 'q';
+        next CMD             if $key eq 's';
+        redo CMD             if $key eq 'r';
+        $i--, redo CMD       if $key eq 'p';
+        $continue_to_end = 1 if $key eq 'c';
+
 
         $self->do_cmd($cmd);
     }
