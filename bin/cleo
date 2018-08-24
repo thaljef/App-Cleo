@@ -47,6 +47,7 @@ the playback:
   p                         redo the previous command
   c                         run all remaining commands
   q                         quit playback
+  [number][enter]           go to specific command
 
 =head1 COMMANDS
 
@@ -100,8 +101,6 @@ Cygwin.  Personally, I have only used C<cleo> on Mac OS X.
 =head1 TODO
 
 =over 4
-
-=item Jump to arbitrary command number
 
 =item Support backspacing in recorded command
 
