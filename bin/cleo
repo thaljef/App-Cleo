@@ -47,7 +47,7 @@ the playback:
   p                         redo the previous command
   c                         run all remaining commands
   q                         quit playback
-  [number][enter]           go to specific command
+  [number][not a digit]     jump to specific command number
 
 =head1 COMMANDS
 

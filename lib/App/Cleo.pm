@@ -76,15 +76,17 @@ sub run {
         while (my $step = shift @steps) {
 
             my $should_pause = !($keep_going || $continue_to_end);
-            my $key  = $should_pause ? ReadKey(0) : '';
-               $key .= ReadKey(0) while ($key =~ /^\d+\z/);
-            print "\n" if $key =~ m/[srp0-9]/;
+            my  $key  = $should_pause ? ReadKey(0) : '';
+            if ($key  =~ /^\d$/) {
+                $key .= $1 while (ReadKey(0) =~ /^(\d)/);
+            }
+            print "\n" if $key =~ m/^[srp]|[0-9]+/;
 
             last CMD             if $key eq 'q';
             next CMD             if $key eq 's';
             redo CMD             if $key eq 'r';
             $i--, redo CMD       if $key eq 'p';
-            $i = $key, redo CMD  if $key =~ /\d/;
+            $i = $key, redo CMD  if $key =~ /^\d+$/;
             $continue_to_end = 1 if $key eq 'c';
 
             $step .= ' ' if not @steps;
@@ -93,15 +95,17 @@ sub run {
         }
 
         my $should_pause = !($keep_going || $continue_to_end);
-        my $key  = $should_pause ? ReadKey(0) : '';
-           $key .= ReadKey(0) while ($key =~ /^\d+\z/);
+        my  $key  = $should_pause ? ReadKey(0) : '';
+        if ($key  =~ /^\d$/) {
+            $key .= $1 while (ReadKey(0) =~ /^(\d)/);
+        }
         print "\n";
 
         last CMD             if $key eq 'q';
         next CMD             if $key eq 's';
         redo CMD             if $key eq 'r';
         $i--, redo CMD       if $key eq 'p';
-        $i = $key, redo CMD  if $key =~ /\d/;
+        $i = $key, redo CMD  if $key =~ /^\d+$/;
         $continue_to_end = 1 if $key eq 'c';
 
         $self->do_cmd($cmd);
