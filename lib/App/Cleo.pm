@@ -59,7 +59,7 @@ sub run {
     CMD:
     for (my $i = 0; $i < @commands; $i++) {
 
-        my $cmd = $commands[$i];
+        my $cmd = defined $commands[$i] ? $commands[$i] : die "no command $i";
         chomp $cmd;
 
         my $keep_going = $cmd =~ s/^\.\.\.//;
@@ -76,13 +76,17 @@ sub run {
         while (my $step = shift @steps) {
 
             my $should_pause = !($keep_going || $continue_to_end);
-            my $key = $should_pause ? ReadKey(0) : '';
-            print "\n" if $key =~ m/[srp]/;
+            my  $key  = $should_pause ? ReadKey(0) : '';
+            if ($key  =~ /^\d$/) {
+                $key .= $1 while (ReadKey(0) =~ /^(\d)/);
+            }
+            print "\n" if $key =~ m/^[srp]|[0-9]+/;
 
             last CMD             if $key eq 'q';
             next CMD             if $key eq 's';
             redo CMD             if $key eq 'r';
             $i--, redo CMD       if $key eq 'p';
+            $i = $key, redo CMD  if $key =~ /^\d+$/;
             $continue_to_end = 1 if $key eq 'c';
 
             $step .= ' ' if not @steps;
@@ -91,15 +95,18 @@ sub run {
         }
 
         my $should_pause = !($keep_going || $continue_to_end);
-        my $key = $should_pause ? ReadKey(0) : '';
+        my  $key  = $should_pause ? ReadKey(0) : '';
+        if ($key  =~ /^\d$/) {
+            $key .= $1 while (ReadKey(0) =~ /^(\d)/);
+        }
         print "\n";
 
         last CMD             if $key eq 'q';
         next CMD             if $key eq 's';
         redo CMD             if $key eq 'r';
         $i--, redo CMD       if $key eq 'p';
+        $i = $key, redo CMD  if $key =~ /^\d+$/;
         $continue_to_end = 1 if $key eq 'c';
-
 
         $self->do_cmd($cmd);
     }
